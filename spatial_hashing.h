@@ -20,15 +20,7 @@ class SpatialHashing {
 
         int n_points = points.size();
 
-        
-        
-        // _x_l_bound = std::min(points_x);
-        // _y_l_bound = std::min(points_y);
-        // _z_l_bound = std::min(points_z);
-
-        // _x_u_bound = std::max(points_x);
-        // _y_u_bound = std::max(points_y);
-        // _z_u_bound = std::max(points_z);
+        _bounds = get_points_bounds(points);
 
         // _x_cell_length = cell_length;
         // _y_cell_length = cell_length;
@@ -70,7 +62,7 @@ private:
     double _x_length;
     double _y_length;
     double _z_length;
-    BoundingBox bounds;
+    BoundingBox _bounds;
     double _x_cell_length;
     double _y_cell_length;
     double _z_cell_length;
@@ -126,6 +118,45 @@ private:
         );
         
         return *min_it;
+    }
+
+    BoundingBox get_points_bounds(
+        const std::vector<std::array<double, 3>>& points
+    ) {
+        BoundingBox bounds;
+        bounds.points.min = points[0];
+        bounds.points.max = points[0];
+
+        if (points.size() == 1) {
+            return bounds;
+        } else {
+            for (size_t ii = 1; ii < points.size(); ++ii) {
+                // min
+                if (points[ii][0] < bounds.components.min_x) {
+                    bounds.components.min_x = points[ii][0];
+                }
+                if (points[ii][1] < bounds.components.min_y) {
+                    bounds.components.min_y = points[ii][1];
+                }
+                if (points[ii][2] < bounds.components.min_z) {
+                    bounds.components.min_z = points[ii][2];
+                }
+
+                // max
+                if (points[ii][0] > bounds.components.max_x) {
+                    bounds.components.max_x = points[ii][0];
+                }
+                if (points[ii][1] > bounds.components.max_y) {
+                    bounds.components.max_y = points[ii][1];
+                }
+                if (points[ii][2] > bounds.components.max_z) {
+                    bounds.components.max_z = points[ii][2];
+                }
+
+            }
+
+            return bounds;
+        }
     }
 
 };
