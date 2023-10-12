@@ -22,4 +22,4 @@ check_libs:
 	fi
 
 compile:
-	g++ -std=c++17 main.cpp -o run_main
+	g++ -g -std=c++17 main.cpp -o run_main

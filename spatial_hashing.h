@@ -14,13 +14,18 @@ struct CellData {
 
 template<typename T_datatype>
 class SpatialHashing {
+public:
     SpatialHashing(const size_t cell_reserve_size)
     : _cell_reserve_size(cell_reserve_size)
     {}
 
-    void set_data(const std::vector<std::array<double, 3>>& points, const std::vector<T_datatype>& data, double cell_length) {
+    void set_data(
+        const std::vector<std::array<double, 3>>& points,
+        const std::vector<T_datatype>& values,
+        const double cell_length
+    ) {
         assert(points.size() >= 1);
-        assert(points.size() == data.size());
+        assert(points.size() == values.size());
 
         _cell_length = cell_length;
 
@@ -34,20 +39,125 @@ class SpatialHashing {
         _n_z_cells = (_bounds.components.max_z - _bounds.components.min_z) / _cell_length + 1;
 
         // Allocate
-        _n_cells = _n_x_cells + _n_y_cells + _n_z_cells;
+        _n_cells = _n_x_cells * _n_y_cells * _n_z_cells;
         allocate_hash_map(_n_cells);
         
         // Insert
-        
-
+        for (size_t ii = 0; ii < n_points; ++ii) {
+            insert_data_risky(
+                points[ii][0],
+                points[ii][1],
+                points[ii][2],
+                values[ii]
+            );
+        }
     }
 
-    void lookup_by_point() {
+    std::vector<T_datatype> lookup_by_point_risky(
+        const std::array<double, 3> point
+    ) {
+        size_t cell_id = hash_risky(
+            point[0],
+            point[1],
+            point[2]
+        );
 
+        std::vector<T_datatype> values;
+        values.reserve(_cell_counts[cell_id]);
+        std::vector<T_datatype>& cell = _map[cell_id];
+        values.insert(
+            values.end(),
+            cell.begin(),
+            cell.begin() + _cell_counts[cell_id]
+        );
+
+        return values;
     }
     
-    void lookup_by_point_distance() {
+    std::vector<T_datatype> lookup_by_point_distance_risky(
+        const std::array<double, 3> point,
+        const double distance
+    ) {
+        std::array<double, 3> max_point = {
+            point[0] + distance,
+            point[1] + distance,
+            point[1] + distance
+        };
 
+        if (max_point[0] > _bounds.components.max_x) {
+            max_point[0] = _bounds.components.max_x;
+        }
+        if (max_point[1] > _bounds.components.max_y) {
+            max_point[1] = _bounds.components.max_y;
+        }
+        if (max_point[2] > _bounds.components.max_z) {
+            max_point[2] = _bounds.components.max_z;
+        }
+
+        std::array<double, 3> min_point = {
+            point[0] - distance,
+            point[1] - distance,
+            point[1] - distance,
+        };
+
+        if (min_point[0] > _bounds.components.min_x) {
+            min_point[0] = _bounds.components.min_x;
+        }
+        if (min_point[1] > _bounds.components.min_y) {
+            min_point[1] = _bounds.components.min_y;
+        }
+        if (min_point[2] > _bounds.components.min_z) {
+            min_point[2] = _bounds.components.min_z;
+        }
+
+        std::array<size_t, 3> max_xyz = hash_to_xyz_risky(
+            max_point[0],
+            max_point[1],
+            max_point[2]
+        );
+
+        std::array<size_t, 3> min_xyz = hash_to_xyz_risky(
+            min_point[0],
+            min_point[1],
+            min_point[2]
+        );
+
+        // There is probably a more efficient way to do this.
+        size_t n_values = 0;
+        size_t cell_id;
+        for (size_t zz = min_xyz[2]; zz <= max_xyz[2]; ++zz) {
+            for (size_t yy = min_xyz[1]; yy <= max_xyz[2]; ++yy) {
+                for (size_t xx = min_xyz[0]; xx <= max_xyz[0]; ++ xx) {
+                    cell_id = xx + 
+                              yy * _n_y_cells +
+                              zz * (_n_x_cells * _n_y_cells);
+                    n_values += _cell_counts[cell_id];
+                }
+            }
+        }
+
+        std::vector<T_datatype> values;
+        values.reserve(n_values);
+
+        for (size_t zz = min_xyz[2]; zz <= max_xyz[2]; ++zz) {
+            for (size_t yy = min_xyz[1]; yy <= max_xyz[2]; ++yy) {
+                for (size_t xx = min_xyz[0]; xx <= max_xyz[0]; ++ xx) {
+                    cell_id = xx + 
+                              yy * _n_y_cells +
+                              zz * (_n_x_cells * _n_y_cells);
+
+                    std::vector<T_datatype>& cell = _map[cell_id];
+                    
+                    values.insert(
+                        values.end(),
+                        cell.begin(),
+                        cell.begin() + _cell_counts[cell_id]
+                    );
+                }
+            }
+        }
+
+        return values;
     }
 
 
@@ -124,6 +234,18 @@ private:
                z_cell_id * (_n_x_cells * _n_y_cells);
     }
 
+    std::array<size_t, 3> hash_to_xyz_risky(
+        const double x_coord,
+        const double y_coord, 
+        const double z_coord
+    ) {
+        return {
+            (x_coord - _bounds.components.min_x) / _cell_length,
+            (y_coord - _bounds.components.min_y) / _cell_length,
+            (z_coord - _bounds.components.min_z) / _cell_length
+        };
+    }
+
     void allocate_hash_map(size_t n_cells) {
         _cell_counts = std::vector<size_t>(n_cells, 0);
         _map = std::vector<std::vector<T_datatype>>(n_cells, std::vector<T_datatype>(_cell_reserve_size));
@@ -141,9 +263,10 @@ private:
         const double x_coord,
         const double y_coord, 
         const double z_coord,
-        T_datatype& value
+        const T_datatype& value
     ) {
         size_t cell_id = hash_risky(x_coord, y_coord, z_coord);
+        std::cout << cell_id << std::endl;
 
         std::vector<T_datatype>& cell = _map[cell_id];
 
