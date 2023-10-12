@@ -8,8 +8,8 @@
 #include "bounding_box.h"
 
 struct CellData {
-    int n_occupied;
-    int n_allocated;
+    size_t n_occupied;
+    size_t n_allocated;
 };
 
 template<typename T_datatype>
@@ -18,7 +18,7 @@ class SpatialHashing {
         assert(points.size() >= 1);
         assert(points.size() == data.size());
 
-        int n_points = points.size();
+        size_t n_points = points.size();
 
         _bounds = get_points_bounds(points);
 
@@ -53,12 +53,12 @@ class SpatialHashing {
 
 
 private:
-    int reserve_size = 5;
+    size_t reserve_size = 5;
 
-    int _n_total_cells;
-    int _n_x_cells;
-    int _n_y_cells;
-    int _n_z_cells;
+    size_t _n_total_cells;
+    size_t _n_x_cells;
+    size_t _n_y_cells;
+    size_t _n_z_cells;
     double _x_length;
     double _y_length;
     double _z_length;
@@ -70,7 +70,7 @@ private:
     std::vector<CellData> _cells_data;
     std::vector<std::vector<T_datatype>> _hash_map;
 
-    // int hash(double x_coord, double y_coord, double z_coord) {
+    // size_t hash(double x_coord, double y_coord, double z_coord) {
     //     if (
     //         x_coord < _x_l_bound ||
     //         x_coord > _x_u_bound ||
@@ -84,9 +84,9 @@ private:
     //         );
     //     }
 
-    //     int x_cell_id = (x_coord - _x_l_bound) / _x_cell_length;
-    //     int y_cell_id = (y_coord - _y_l_bound) / _y_cell_length;
-    //     int z_cell_id = (z_coord - _z_l_bound) / _z_cell_length;
+    //     size_t x_cell_id = (x_coord - _x_l_bound) / _x_cell_length;
+    //     size_t y_cell_id = (y_coord - _y_l_bound) / _y_cell_length;
+    //     size_t z_cell_id = (z_coord - _z_l_bound) / _z_cell_length;
 
     //     return x_cell_id + 
     //            y_cell_id * _n_y_cells +
