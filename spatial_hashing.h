@@ -14,6 +14,10 @@ struct CellData {
 
 template<typename T_datatype>
 class SpatialHashing {
+    SpatialHashing(const size_t cell_reserve_size)
+    : _cell_reserve_size(cell_reserve_size)
+    {}
+
     void set_data(const std::vector<std::array<double, 3>>& points, const std::vector<T_datatype>& data, double cell_length) {
         assert(points.size() >= 1);
         assert(points.size() == data.size());
@@ -29,12 +33,9 @@ class SpatialHashing {
         _n_y_cells = (_bounds.components.max_y - _bounds.components.min_y) / _cell_length + 1;
         _n_z_cells = (_bounds.components.max_z - _bounds.components.min_z) / _cell_length + 1;
 
-
-
-
-
-
         // Allocate
+        _n_cells = _n_x_cells + _n_y_cells + _n_z_cells;
+        allocate_hash_map(_n_cells);
         
         // Insert
         
@@ -51,47 +52,81 @@ class SpatialHashing {
 
 
 private:
-    size_t reserve_size = 5;
+    size_t _cell_reserve_size;
 
-    size_t _n_total_cells;
+    size_t _n_cells;
     size_t _n_x_cells;
     size_t _n_y_cells;
     size_t _n_z_cells;
-    double _x_length;
-    double _y_length;
-    double _z_length;
     BoundingBox _bounds;
     double _cell_length;
     
 
-    std::vector<CellData> _cells_data;
-    std::vector<std::vector<T_datatype>> _hash_map;
+    std::vector<size_t> _cell_counts;
+    std::vector<std::vector<T_datatype>> _map;
 
-    // size_t hash(double x_coord, double y_coord, double z_coord) {
-    //     if (
-    //         x_coord < _x_l_bound ||
-    //         x_coord > _x_u_bound ||
-    //         y_coord < _y_l_bound ||
-    //         y_coord > _y_u_bound ||
-    //         z_coord < _z_l_bound ||
-    //         z_coord > _z_u_bound
-    //     ) {
-    //         throw std::runtime_error(
-    //             "ERROR: point to be hashed is outside of bounds!"
-    //         );
-    //     }
+    
+    /**
+     * @brief Standard Hash. Checks that point is within the existing hash map.
+     * 
+     * @param x_coord 
+     * @param y_coord 
+     * @param z_coord 
+     * @return size_t 
+     */
+    size_t hash(
+        const double x_coord,
+        const double y_coord, 
+        const double z_coord
+    ) {
+        if (
+            out_of_bounds(
+                x_coord,
+                y_coord,
+                z_coord,
+                _bounds
+            )
+        ) {
+            throw std::runtime_error(
+                "ERROR: point to be hashed is outside of bounds!"
+            );
+        }
 
-    //     size_t x_cell_id = (x_coord - _x_l_bound) / _x_cell_length;
-    //     size_t y_cell_id = (y_coord - _y_l_bound) / _y_cell_length;
-    //     size_t z_cell_id = (z_coord - _z_l_bound) / _z_cell_length;
+        size_t x_cell_id = (x_coord - _bounds.components.min_x) / _cell_length;
+        size_t y_cell_id = (y_coord - _bounds.components.min_y) / _cell_length;
+        size_t z_cell_id = (z_coord - _bounds.components.min_z) / _cell_length;
 
-    //     return x_cell_id + 
-    //            y_cell_id * _n_y_cells +
-    //            z_cell_id * (_n_x_cells * _n_y_cells);
-    // }
+        return x_cell_id + 
+               y_cell_id * _n_y_cells +
+               z_cell_id * (_n_x_cells * _n_y_cells);
+    }
 
-    void allocate_hash_map() {
-        
+    /**
+     * @brief Risky Hash. Does not check for point being within bounds of
+     current map. User must guarantee point is within bounds.
+     * 
+     * @param x_coord 
+     * @param y_coord 
+     * @param z_coord 
+     * @return size_t 
+     */
+    size_t hash_risky(
+        const double x_coord,
+        const double y_coord, 
+        const double z_coord
+    ) {
+        size_t x_cell_id = (x_coord - _bounds.components.min_x) / _cell_length;
+        size_t y_cell_id = (y_coord - _bounds.components.min_y) / _cell_length;
+        size_t z_cell_id = (z_coord - _bounds.components.min_z) / _cell_length;
+
+        return x_cell_id + 
+               y_cell_id * _n_y_cells +
+               z_cell_id * (_n_x_cells * _n_y_cells);
+    }
+
+    void allocate_hash_map(size_t n_cells) {
+        _cell_counts = std::vector<size_t>(n_cells, 0);
+        _map = std::vector<std::vector<T_datatype>>(n_cells, std::vector<T_datatype>(_cell_reserve_size));
     }
 
     // Utils
@@ -132,6 +167,26 @@ private:
             }
 
             return bounds;
+        }
+    }
+
+    bool out_of_bounds(
+        const double x_coord,
+        const double y_coord,
+        const double z_coord,
+        const BoundingBox& bounds
+    ) {
+        if (
+            x_coord < bounds.components.min_x ||
+            x_coord > bounds.components.max_x ||
+            y_coord < bounds.components.min_y ||
+            y_coord > bounds.components.max_y ||
+            z_coord < bounds.components.min_z ||
+            z_coord > bounds.components.max_z
+        ) {
+            return true;
+        } else {
+            return false;
         }
     }
 
