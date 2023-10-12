@@ -7,6 +7,13 @@
 
 #include "bounding_box.h"
 
+void print_point(const std::array<double, 3>& point) {
+    std::cout << "x: " << point[0]
+              << ", y: " << point[0]
+              << ", z: " << point[0]
+              << std::endl;
+}
+
 struct CellData {
     size_t n_occupied;
     size_t n_allocated;
@@ -83,6 +90,9 @@ public:
             point[1] + distance,
             point[1] + distance
         };
+        std::cout << "max_point: ";
+        print_point(max_point);
+        std::cout << std::endl;
 
         if (max_point[0] > _bounds.components.max_x) {
             max_point[0] = _bounds.components.max_x;
@@ -93,22 +103,31 @@ public:
         if (max_point[2] > _bounds.components.max_z) {
             max_point[2] = _bounds.components.max_z;
         }
+        std::cout << "max_point: ";
+        print_point(max_point);
+        std::cout << std::endl;
 
         std::array<double, 3> min_point = {
             point[0] - distance,
             point[1] - distance,
             point[1] - distance,
         };
+        std::cout << "min_point: ";
+        print_point(min_point);
+        std::cout << std::endl;
 
-        if (min_point[0] > _bounds.components.min_x) {
+        if (min_point[0] < _bounds.components.min_x) {
             min_point[0] = _bounds.components.min_x;
         }
-        if (min_point[1] > _bounds.components.min_y) {
+        if (min_point[1] < _bounds.components.min_y) {
             min_point[1] = _bounds.components.min_y;
         }
-        if (min_point[2] > _bounds.components.min_z) {
+        if (min_point[2] < _bounds.components.min_z) {
             min_point[2] = _bounds.components.min_z;
         }
+        std::cout << "min_point: ";
+        print_point(min_point);
+        std::cout << std::endl;
 
         std::array<size_t, 3> max_xyz = hash_to_xyz_risky(
             max_point[0],
