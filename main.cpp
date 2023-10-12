@@ -33,7 +33,7 @@ int main() {
     std::cout << "Playing with the Spatial Hasher...." << std::endl;
 
     std::vector<std::array<double, 3>> points;
-    size_t grid_size = 2;
+    size_t grid_size = 10;
     for (double ii = 0; ii < grid_size; ++ii) {
         for (double jj = 0; jj < grid_size; ++jj) {
             for (double kk = 0; kk < grid_size; ++kk) {
@@ -48,7 +48,7 @@ int main() {
         indices.push_back(ii);
     }
 
-    double cell_length = 1.0;
+    double cell_length = 2.0;
 
 
     SpatialHashing<size_t> map(2);

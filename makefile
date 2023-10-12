@@ -22,4 +22,4 @@ check_libs:
 	fi
 
 compile:
-	g++ -g -std=c++17 main.cpp -o run_main
+	g++ -g -fsanitize=address -std=c++17 main.cpp -o run_main

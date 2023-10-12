@@ -47,6 +47,7 @@ public:
 
         // Allocate
         _n_cells = _n_x_cells * _n_y_cells * _n_z_cells;
+        std::cout << "n cells: " << _n_cells << std::endl;
         allocate_hash_map(_n_cells);
         
         // Insert
@@ -289,11 +290,13 @@ private:
 
         std::vector<T_datatype>& cell = _map[cell_id];
 
-        if (cell.size() == cell.capacity()) {
-            cell.reserve(2 * cell.capacity());
+        if (_cell_counts[cell_id]+1 == cell.capacity()) {
+            std::cout << "new capacity: " << 2 * cell.capacity() << std::endl;
+            cell.resize(2 * cell.capacity());
         }
 
         cell[_cell_counts[cell_id]] = value;
+        // cell.push_back(value);
         _cell_counts[cell_id] += 1;
     }
 
