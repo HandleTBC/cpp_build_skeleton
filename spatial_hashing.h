@@ -129,6 +129,32 @@ private:
         _map = std::vector<std::vector<T_datatype>>(n_cells, std::vector<T_datatype>(_cell_reserve_size));
     }
 
+    /**
+     * @brief Inserts value at a position into _map. Uses risky hash function.
+     * 
+     * @param x_coord 
+     * @param y_coord 
+     * @param z_coord 
+     * @param value 
+     */
+    void insert_data_risky(
+        const double x_coord,
+        const double y_coord, 
+        const double z_coord,
+        T_datatype& value
+    ) {
+        size_t cell_id = hash_risky(x_coord, y_coord, z_coord);
+
+        std::vector<T_datatype>& cell = _map[cell_id];
+
+        if (cell.size() == cell.capacity()) {
+            cell.reserve(2 * cell.capacity());
+        }
+
+        cell[_cell_counts[cell_id]] = value;
+        _cell_counts[cell_id] += 1;
+    }
+
     // Utils
 
     BoundingBox get_points_bounds(
