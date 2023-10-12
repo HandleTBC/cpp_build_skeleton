@@ -14,22 +14,20 @@ struct CellData {
 
 template<typename T_datatype>
 class SpatialHashing {
-    void add_data(const std::vector<std::array<double, 3>>& points, const std::vector<T_datatype>& data, double cell_length) {
+    void set_data(const std::vector<std::array<double, 3>>& points, const std::vector<T_datatype>& data, double cell_length) {
         assert(points.size() >= 1);
         assert(points.size() == data.size());
+
+        _cell_length = cell_length;
 
         size_t n_points = points.size();
 
         _bounds = get_points_bounds(points);
 
-        // _x_cell_length = cell_length;
-        // _y_cell_length = cell_length;
-        // _z_cell_length = cell_length;
-
-        // // +1 guarantees there is a cell for the case where point is at upper bound.
-        // _n_x_cells = (_x_u_bound - _x_l_bound) / _x_cell_length + 1;
-        // _n_y_cells = (_y_u_bound - _y_l_bound) / _y_cell_length + 1;
-        // _n_z_cells = (_z_u_bound - _z_l_bound) / _z_cell_length + 1;
+        // +1 guarantees there is a cell for the case where point is at upper bound.
+        _n_x_cells = (_bounds.components.max_x - _bounds.components.min_x) / _cell_length + 1;
+        _n_y_cells = (_bounds.components.max_y - _bounds.components.min_y) / _cell_length + 1;
+        _n_z_cells = (_bounds.components.max_z - _bounds.components.min_z) / _cell_length + 1;
 
 
 
@@ -63,9 +61,8 @@ private:
     double _y_length;
     double _z_length;
     BoundingBox _bounds;
-    double _x_cell_length;
-    double _y_cell_length;
-    double _z_cell_length;
+    double _cell_length;
+    
 
     std::vector<CellData> _cells_data;
     std::vector<std::vector<T_datatype>> _hash_map;
