@@ -99,27 +99,6 @@ private:
 
     // Utils
 
-    double get_min_points_component(
-        std::vector<std::array<double, 3>> points,
-        size_t component
-    ) {
-        assert(component >=0 && component <= 2);
-
-        size_t n_points = points.size();
-
-        std::vector<double> points_component(n_points);
-        for (size_t ii = 0; ii < n_points; ++ii) {
-            points_component[ii] = points[ii][component];
-        }
-
-        auto min_it = std::min_element(
-            points_component.begin(),
-            points_component.end()
-        );
-        
-        return *min_it;
-    }
-
     BoundingBox get_points_bounds(
         const std::vector<std::array<double, 3>>& points
     ) {
