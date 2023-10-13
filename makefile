@@ -2,7 +2,7 @@ LIB_DIR = libs
 LIB_EIGEN = eigen-3.4.0
 LIB_GTEST = googletest-1.14.0
 
-all: check_libs
+all: check_libs build_cmake
 
 check_libs:
 	echo "Checking libraries"
