@@ -6,7 +6,7 @@ N.B.: This softwre will not build without satisfying the prerequisites.
 - VTK: 9.3.0.rc1 (build locally)
 - CMake: v3.14
 
-To retrieve Eigen and GoogleTest, execute `make check_libs`
+To retrieve Eigen and GoogleTest, execute `make check_libs`.
 
 ### VTK
 VTK will need to be built locally, as a library to be included. This is relatively straightforward, but may seem very complex to first timers. Stick with it.

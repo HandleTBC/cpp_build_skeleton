@@ -33,6 +33,9 @@ endforeach()
 include_directories(libs/eigen-3.4.0)
 
 # Google Test
+# Switch off GMOCK
+set(BUILD_GMOCK OFF CACHE BOOL "Don't build gmock" FORCE)
+
 add_subdirectory(libs/googletest-1.14.0)
 enable_testing()
 include_directories(
