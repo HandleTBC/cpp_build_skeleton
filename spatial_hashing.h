@@ -259,10 +259,12 @@ private:
         const double y_coord, 
         const double z_coord
     ) {
+        // Static cast to remove narrowing conversion warning on double to
+        // size_t.
         return {
-            (x_coord - _bounds.components.min_x) / _cell_length,
-            (y_coord - _bounds.components.min_y) / _cell_length,
-            (z_coord - _bounds.components.min_z) / _cell_length
+            static_cast<size_t>((x_coord - _bounds.components.min_x) / _cell_length),
+            static_cast<size_t>((y_coord - _bounds.components.min_y) / _cell_length),
+            static_cast<size_t>((z_coord - _bounds.components.min_z) / _cell_length)
         };
     }
 
