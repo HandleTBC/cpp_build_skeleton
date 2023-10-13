@@ -22,4 +22,10 @@ check_libs:
 	fi
 
 compile:
-	g++ -g -fsanitize=address -std=c++17 main.cpp -o run_main
+	g++ -g -fsanitize=address -std=c++17 src/main.cpp -o run_main
+
+build_cmake:
+	mkdir build; \
+	cd build; \
+	cmake ..; \
+	make
