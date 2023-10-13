@@ -5,6 +5,11 @@ project(SpatialAccelerator)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Config
+if(EXISTS "${CMAKE_SOURCE_DIR}/config.cmake")
+    include("${CMAKE_SOURCE_DIR}/config.cmake")
+endif()
+
 # Eigen - Header only library
 include_directories(libs/eigen-3.4.0)
 
