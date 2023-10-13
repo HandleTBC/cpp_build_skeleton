@@ -5,11 +5,30 @@ project(SpatialAccelerator)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Config
+###--> Configuration and Verification
+# Include Config
 if(EXISTS "${CMAKE_SOURCE_DIR}/config.cmake")
     include("${CMAKE_SOURCE_DIR}/config.cmake")
 endif()
 
+# Verify required config
+if(NOT DEFINED VTK_DIR)
+    message(FATAL_ERROR "VTK_DIR is not defined. Please specify the VTK directory.")
+endif()
+
+# Check for required libraries
+set(REQUIRED_SUBDIRS
+    eigen-3.4.0
+    googletest-1.14.0
+)
+
+foreach(subdir ${REQUIRED_SUBDIRS})
+    if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/libs/${subdir}")
+        message(FATAL_ERROR "Required subdirectory ${subdir} does not exist in the libs folder!")
+    endif()
+endforeach()
+
+###--> Add libraries
 # Eigen - Header only library
 include_directories(libs/eigen-3.4.0)
 
@@ -37,6 +56,8 @@ find_package(VTK COMPONENTS
 if (NOT VTK_FOUND)
   message(FATAL_ERROR "CylinderExample: Unable to find the VTK build folder.")
 endif()
+
+###--> Define Executables
 
 # Prevent a "command line is too long" failure in Windows.
 set(CMAKE_NINJA_FORCE_RESPONSE_FILE "ON" CACHE BOOL "Force Ninja to use response files.")

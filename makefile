@@ -29,3 +29,6 @@ build_cmake:
 	cd build; \
 	cmake ..; \
 	make
+
+clean:
+	rm -rf ./build
