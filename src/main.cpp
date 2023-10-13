@@ -1,6 +1,7 @@
 #include <iostream>
 #include <array>
 #include <vector>
+#include <Eigen/Dense>
 
 #include "spatial_hashing.h"
 
@@ -65,6 +66,13 @@ int main() {
 
     indices_returned = map.lookup_by_point_distance_risky(points[0], 5.0);
     std::cout << "Size of indices_returned: " << indices_returned.size() << std::endl;
+
+    // Small Eigen example
+    Eigen::MatrixXd A(3, 3);
+    A << 2, 1, 0,
+         1, 3, 1,
+         0, 1, 2;
+    std::cout << "An output from an eigen array: " << A(0) << std::endl;
 
 
     return 0;
