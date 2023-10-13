@@ -1,3 +1,11 @@
+# Build System Example
+This is a skeleton for C++ projects. Capabilities:
+- Eigen
+- VTK
+- GoogleTest
+- CMake
+- Build system for multiple targets, including test.
+
 ## Prerequisites
 N.B.: This softwre will not build without satisfying the prerequisites.
 
@@ -24,3 +32,6 @@ You must create a config.cmake. An example of a `config.cmake`:
 set(VTK_DIR "/home/<username>/vtk/build")
 ```
 In this case, the vtk build is located at `/home/<username>/vtk/build`, where username was my personal username.
+
+## Building
+CMake takes care of configuration and prepares targets for building in the native system for a given platform. The targets built by cmake can be executed directly. However, a top level `makefile` is provided to enable out of source building for the targets defined via cmake.
