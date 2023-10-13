@@ -48,8 +48,8 @@ build_release:
 
 test: configure_debug
 	@cd build/debug && \
-	make -s runTests && \
-	./runTests
+	make -s run_tests && \
+	./run_tests
 
 clean:
 	rm -rf ./build
