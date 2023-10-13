@@ -1,8 +1,11 @@
+PHONY_TARGETS := debug release configure_debug configure_release build_debug build_release
+.PHONY: $(PHONY_TARGETS)
+
 LIB_DIR = libs
 LIB_EIGEN = eigen-3.4.0
 LIB_GTEST = googletest-1.14.0
 
-all: check_libs build_cmake
+vanilla: check_libs debug 
 
 check_libs:
 	echo "Checking libraries"
@@ -21,14 +24,34 @@ check_libs:
 		rm v1.14.0.zip; \
 	fi
 
-compile:
-	g++ -g -fsanitize=address -std=c++17 src/main.cpp -o run_main
+debug: configure_debug build_debug
 
-build_cmake:
-	mkdir build; \
-	cd build; \
-	cmake ..; \
-	make
+release: configure_release build_release
+
+configure_debug:
+	@mkdir -p build/debug
+	@cd build/debug && \
+	cmake -DCMAKE_BUILD_TYPE=Debug ../..
+
+configure_release:
+	@mkdir -p build/release
+	@cd build/release && \
+	cmake -DCMAKE_BUILD_TYPE=Release ../..
+
+build_debug:
+	@cd build/debug && \
+	make -s $(filter-out $(PHONY_TARGETS),$(MAKECMDGOALS))
+
+build_release:
+	@cd build/release && \
+	make -s $(filter-out $(PHONY_TARGETS),$(MAKECMDGOALS))
+
+
 
 clean:
 	rm -rf ./build
+
+# Catch-all rule to prevent make from erroring out when given
+# targets it doesn't recognize
+%:
+	@:

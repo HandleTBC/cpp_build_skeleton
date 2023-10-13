@@ -38,10 +38,10 @@ set(BUILD_GMOCK OFF CACHE BOOL "Don't build gmock" FORCE)
 
 add_subdirectory(libs/googletest-1.14.0)
 enable_testing()
-include_directories(
-    ${gtest_SOURCE_DIR}/include
-    ${gtest_SOURCE_DIR}
-)
+# include_directories(
+#     ${gtest_SOURCE_DIR}/include
+#     ${gtest_SOURCE_DIR}
+# )
 
 # VTK
 find_package(VTK COMPONENTS
@@ -90,5 +90,30 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(runTests)
+
+
+
+# ###--> Targets
+# # Custom target for debug build
+add_custom_target(debug
+    COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Debug ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target spatial_accelerator
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target runTests
+    COMMENT "Building debug..."
+)
+
+# # # Custom target for release build
+# # add_custom_target(release
+# #     COMMAND ${CMAKE_COMMAND} -DCMAKE_BUILD_TYPE=Release ${CMAKE_SOURCE_DIR}
+# #     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target all
+# #     COMMENT "Building release..."
+# # )
+
+# # Custom target for tests
+add_custom_target(run_tests
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target runTests
+    COMMAND ${CMAKE_BINARY_DIR}/runTests
+    COMMENT "Running tests..."
+)
 
 
