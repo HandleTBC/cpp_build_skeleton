@@ -46,7 +46,10 @@ build_release:
 	@cd build/release && \
 	make -s $(filter-out $(PHONY_TARGETS),$(MAKECMDGOALS))
 
-
+test: configure_debug
+	@cd build/debug && \
+	make -s runTests && \
+	./runTests
 
 clean:
 	rm -rf ./build
