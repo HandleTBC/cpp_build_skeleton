@@ -80,7 +80,12 @@ add_executable(
 )
 
 # Test Executable
-add_executable(run_tests tests/test_souffle.cpp)
+add_executable(run_tests
+    tests/test_spatial_hashing.cpp
+)
+target_include_directories(run_tests
+    PUBLIC ${CMAKE_SOURCE_DIR}/src
+)
 
 # Link test executable with Google Test
 target_link_libraries(

@@ -34,7 +34,7 @@ int main() {
     std::cout << "Playing with the Spatial Hasher...." << std::endl;
 
     std::vector<std::array<double, 3>> points;
-    size_t grid_size = 10;
+    size_t grid_size = 3;
     for (double ii = 0; ii < grid_size; ++ii) {
         for (double jj = 0; jj < grid_size; ++jj) {
             for (double kk = 0; kk < grid_size; ++kk) {
@@ -49,7 +49,7 @@ int main() {
         indices.push_back(ii);
     }
 
-    double cell_length = 2.0;
+    double cell_length = 1.0;
 
 
     SpatialHashing<size_t> map(2);
@@ -64,7 +64,7 @@ int main() {
 
 
 
-    indices_returned = map.lookup_by_point_distance_risky(points[0], 5.0);
+    indices_returned = map.lookup_by_point_distance_risky(points[0], 1.0);
     std::cout << "Size of indices_returned: " << indices_returned.size() << std::endl;
 
     // Small Eigen example

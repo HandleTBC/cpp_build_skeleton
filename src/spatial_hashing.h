@@ -47,7 +47,6 @@ public:
 
         // Allocate
         _n_cells = _n_x_cells * _n_y_cells * _n_z_cells;
-        std::cout << "n cells: " << _n_cells << std::endl;
         allocate_hash_map(_n_cells);
         
         // Insert
@@ -91,10 +90,8 @@ public:
             point[1] + distance,
             point[1] + distance
         };
-        std::cout << "max_point: ";
-        print_point(max_point);
-        std::cout << std::endl;
 
+        // Enforce bounding box on max_point
         if (max_point[0] > _bounds.components.max_x) {
             max_point[0] = _bounds.components.max_x;
         }
@@ -104,19 +101,14 @@ public:
         if (max_point[2] > _bounds.components.max_z) {
             max_point[2] = _bounds.components.max_z;
         }
-        std::cout << "max_point: ";
-        print_point(max_point);
-        std::cout << std::endl;
 
         std::array<double, 3> min_point = {
             point[0] - distance,
             point[1] - distance,
             point[1] - distance,
         };
-        std::cout << "min_point: ";
-        print_point(min_point);
-        std::cout << std::endl;
 
+        // Enforce bounding box on min_point
         if (min_point[0] < _bounds.components.min_x) {
             min_point[0] = _bounds.components.min_x;
         }
@@ -126,9 +118,6 @@ public:
         if (min_point[2] < _bounds.components.min_z) {
             min_point[2] = _bounds.components.min_z;
         }
-        std::cout << "min_point: ";
-        print_point(min_point);
-        std::cout << std::endl;
 
         std::array<size_t, 3> max_xyz = hash_to_xyz_risky(
             max_point[0],
@@ -288,17 +277,14 @@ private:
         const T_datatype& value
     ) {
         size_t cell_id = hash_risky(x_coord, y_coord, z_coord);
-        std::cout << cell_id << std::endl;
 
         std::vector<T_datatype>& cell = _map[cell_id];
 
         if (_cell_counts[cell_id]+1 == cell.capacity()) {
-            std::cout << "new capacity: " << 2 * cell.capacity() << std::endl;
             cell.resize(2 * cell.capacity());
         }
 
         cell[_cell_counts[cell_id]] = value;
-        // cell.push_back(value);
         _cell_counts[cell_id] += 1;
     }
 
