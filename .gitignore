@@ -3,3 +3,6 @@ build/
 
 # cmake configuration file
 config.cmake
+
+#vscode
+.vscode
