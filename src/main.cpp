@@ -68,8 +68,14 @@ int main() {
     indices_returned = map.lookup_by_point_distance_risky(points[0], 1.0);
     std::cout << "Size of indices_returned: " << indices_returned.size() << std::endl;
 
+    // std::vector<std::array<double, 3>> point_colors(points.size(), {255, 0, 0});
+    std::vector<std::array<double, 3>> point_colors(points.size(), {255, 255, 255});
+    for (size_t index : indices_returned) {
+        point_colors[index] = {255, 0, 0};
+    }
+
     Renderer renderer("Points Visualization");
-    renderer.add_points(points);
+    renderer.add_points(points, point_colors);
     renderer.start();
 
     // Small Eigen example

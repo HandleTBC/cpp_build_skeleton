@@ -1,10 +1,13 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <cassert>
 
 #include <vtkNew.h>
 #include <vtkCellArray.h>
+#include <vtkCellData.h>
 #include <vtkPoints.h>
+#include <vtkUnsignedCharArray.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>
@@ -29,14 +32,22 @@ public:
     }
 
     void add_points(
-        const std::vector<std::array<double, 3>>& input_points
+        const std::vector<std::array<double, 3>>& input_points,
+        const std::vector<std::array<double, 3>>& input_colors
     ){
+        assert(input_points.size() == input_colors.size());
+
         //// Geometry and topology
         //  Geometry of a point (coordinate)
         vtkNew<vtkPoints> points;
         
         // Topology of the point (vertex)
         vtkNew<vtkCellArray> vertices;
+
+        // Colors of the points
+        vtkNew<vtkUnsignedCharArray> colors;
+        colors->SetNumberOfComponents(3);
+        
 
         // Poldata container
         vtkNew<vtkPolyData> points_data;
@@ -46,10 +57,16 @@ public:
         for (size_t ii = 0; ii < input_points.size(); ++ii) {
             point_id[0] = points->InsertNextPoint(input_points[ii].data());
             vertices->InsertNextCell(1, point_id);
+            colors->InsertNextTuple3(
+                input_colors[ii][0],
+                input_colors[ii][1],
+                input_colors[ii][2]
+            );
         }
 
         points_data->SetPoints(points);
         points_data->SetVerts(vertices);
+        points_data->GetCellData()->SetScalars(colors);
 
         //// Visualize
         vtkNew<vtkPolyDataMapper> mapper;
@@ -57,7 +74,6 @@ public:
 
         vtkNew<vtkActor> actor;
         actor->SetMapper(mapper);
-        actor->GetProperty()->SetColor(255, 0, 0);
         actor->GetProperty()->SetPointSize(20);
 
         this->renderer->AddActor(actor);
