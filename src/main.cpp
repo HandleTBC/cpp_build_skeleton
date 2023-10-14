@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 
 #include "spatial_hashing.h"
+#include "renderer.h"
 
 int main() {
     std::cout << "Hi from Spatial Accelerator test code." << std::endl;
@@ -66,6 +67,10 @@ int main() {
 
     indices_returned = map.lookup_by_point_distance_risky(points[0], 1.0);
     std::cout << "Size of indices_returned: " << indices_returned.size() << std::endl;
+
+    Renderer renderer("Points Visualization");
+    renderer.add_points(points);
+    renderer.start();
 
     // Small Eigen example
     Eigen::MatrixXd A(3, 3);

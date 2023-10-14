@@ -78,6 +78,13 @@ add_executable(
     spatial_accelerator
     src/main.cpp
 )
+target_link_libraries(spatial_accelerator
+    PRIVATE ${VTK_LIBRARIES}
+)
+vtk_module_autoinit(
+  TARGETS spatial_accelerator
+  MODULES ${VTK_LIBRARIES}
+)
 
 # Test Executable
 add_executable(run_tests
