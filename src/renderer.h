@@ -14,6 +14,7 @@
 #include <vtkProperty.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
+#include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkRenderer.h>
 
 
@@ -23,7 +24,10 @@ public:
         render_window->SetWindowName(window_name.c_str());
         render_window->AddRenderer(renderer);
 
+        vtkNew<vtkInteractorStyleTrackballCamera> interactor_style;
+
         render_window_interactor->SetRenderWindow(render_window);
+        render_window_interactor->SetInteractorStyle(interactor_style);
     }
 
     void start() {
